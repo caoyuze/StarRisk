@@ -197,7 +197,7 @@ void Enemy::move(float x, float y)
 					this->runAction(move);
 					*/
 				}
-				else if (e_curveDirection == Left)
+				else if (e_curveDirection == Left )
 				{
 					bezier.controlPoint_1 = p2;
 					bezier.controlPoint_2 = p1;
