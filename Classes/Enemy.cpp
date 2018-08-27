@@ -167,7 +167,37 @@ void Enemy::move(float x, float y)
 					p8 = Point(-this->getContentSize().height, h/5),
 					p9 = Point(w*3/4, h/5),
 					p10 = Point(w+this->getContentSize().height, h/5);
-				if (e_curveDirection == Left)
+				if (e_curveDirection == Right)
+				{
+					
+					bezier.controlPoint_1 = p1;
+					bezier.controlPoint_2 = p2;
+					bezier.endPosition = p3;
+					auto move1 = BezierTo::create(2.0f, bezier);
+					bezier.controlPoint_1 = p4;
+					bezier.controlPoint_2 = p5;
+					bezier.endPosition = p6;
+					auto move2 = BezierTo::create(2.0f, bezier);
+					bezier.controlPoint_1 = p1;
+					bezier.controlPoint_2 = p7;
+					bezier.endPosition = p8;
+					auto move3 = BezierTo::create(2.0f, bezier);
+					this->runAction(Sequence::create(move1, move2, move3, NULL));
+					/*
+					auto array = CCPointArray::create(20);
+					array->addControlPoint(Point(424, 500));
+					array->addControlPoint(Point(345, 410));
+					array->addControlPoint(Point(161, 425));
+					array->addControlPoint(Point(163, 500));
+					array->addControlPoint(Point(255, 575));
+					array->addControlPoint(Point(344, 500));
+					array->addControlPoint(Point(260, 358));
+					array->addControlPoint(Point(0, 250));
+					auto move = CCCardinalSplineTo::create(10, array, 10);;
+					this->runAction(move);
+					*/
+				}
+				else if (e_curveDirection == Left)
 				{
 					bezier.controlPoint_1 = p2;
 					bezier.controlPoint_2 = p1;
@@ -182,36 +212,6 @@ void Enemy::move(float x, float y)
 					bezier.endPosition = p10;
 					auto move3 = BezierTo::create(2.0f, bezier);
 					this->runAction(Sequence::create(move1, move2, move3, NULL));
-				}
-				else if (e_curveDirection == Right)
-				{
-					/*
-					bezier.controlPoint_1 = p1;
-					bezier.controlPoint_2 = p2;
-					bezier.endPosition = p3;
-					auto move1 = BezierTo::create(2.0f, bezier);
-					bezier.controlPoint_1 = p4;
-					bezier.controlPoint_2 = p5;
-					bezier.endPosition = p6;
-					auto move2 = BezierTo::create(2.0f, bezier);
-					bezier.controlPoint_1 = p1;
-					bezier.controlPoint_2 = p7;
-					bezier.endPosition = p8;
-					auto move3 = BezierTo::create(2.0f, bezier);
-					this->runAction(Sequence::create(move1, move2, move3, NULL));
-					*/
-					auto array = CCPointArray::create(20);
-					array->addControlPoint(Point(424, 500));
-					array->addControlPoint(Point(345, 410));
-					array->addControlPoint(Point(161, 425));
-					array->addControlPoint(Point(163, 500));
-					array->addControlPoint(Point(255, 575));
-					array->addControlPoint(Point(344, 500));
-					array->addControlPoint(Point(260, 358));
-					array->addControlPoint(Point(0, 250));
-					auto move = CCCardinalSplineTo::create(10, array, 10);;
-					this->runAction(move);
-					
 				}
 				e_canMove = false;
 			}
