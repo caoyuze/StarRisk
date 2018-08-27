@@ -86,8 +86,6 @@ void GameScene::update(float dt)
 {
 	//the moving of background
 	moveBackground();
-	updateHeroHP();
-	//updateBomb();
 	flyBullets();
 	flyEnemys();
 
@@ -96,6 +94,16 @@ void GameScene::update(float dt)
 	
 	//prop check
 	crashPropAndHero();
+
+	//update data
+	updateSpeed();
+	updateHeroHP();
+	updateBomb();
+}
+
+void GameScene::updateSpeed()
+{
+	Enemy::updateLevelSpeed(m_score / SPEED_LEVELUP_SCORE);
 }
 
 //Bullet
@@ -156,7 +164,7 @@ void GameScene::createEnemy(EnemyType type)
     float y = VisSize.height + enemy->getContentSize().height/2;
     enemy->setPosition(x, y);
     h_enemies.pushBack(enemy);
-    this->addChild(enemy, 0);
+    this->addChild(enemy, ENEMY_LAYER);
 }
 
 void GameScene::createSmallEnemy(float) 
@@ -255,12 +263,11 @@ void GameScene::bomb(Ref* ref)
 		return;
 	}
 
-	auto lblScore = (Label *)this->getChildByTag(SL_TAG);
-	Audio->playEffect("use_bomb.mp3");
-
 	m_bombCount--;
-	updateBomb();
 
+	Audio->playEffect("use_bomb.mp3");
+	auto lblScore = (Label *)this->getChildByTag(SL_TAG);
+	
 	for(auto enemy : h_enemies)
 	{
 		enemy->setHP(enemy->getHP()-BOMB_ATTACK);
@@ -269,8 +276,6 @@ void GameScene::bomb(Ref* ref)
 		{
 			removableEnemies.push_back(enemy);
 			m_score += enemy->getScore();
-			lblScore->setString(StringUtils::format("%d", m_score));
-			Enemy::updateLevelSpeed(m_score / SP_ENEMY_INCREMENT);
 		}
 	}
 	//remove destroyed enemies
@@ -278,9 +283,8 @@ void GameScene::bomb(Ref* ref)
 	{
 		h_enemies.eraseObject(enemy);
 	}
-	removableEnemies.clear();
-	removableEnemies.shrink_to_fit();
 	
+	lblScore->setString(StringUtils::format("%d", m_score));
 }
 
 void GameScene::createHero(HeroType htype)
@@ -561,7 +565,6 @@ void GameScene::crashEnemyAndHeroAndBullet()
 					sl->setString(StringUtils::format("%d", m_score));
 					enemy->destroyedAnim();    
 					removableEnemies.push_back(enemy);
-					Enemy::updateLevelSpeed(m_score / SPEED_LEVELUP_SCORE);
 				}
             } 
         }       
@@ -603,7 +606,6 @@ void GameScene::crashPropAndHero()
 				if(m_bombCount < MAX_BOMB_NUMBER)
 				{
 					m_bombCount++;
-					updateBomb();
 				}
 				break;
 			case Hp:

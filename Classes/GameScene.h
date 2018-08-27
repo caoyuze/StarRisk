@@ -59,6 +59,7 @@ private:
 	void createSprites();
 	void createHeroHP();
 	void updateBomb();
+	void updateSpeed();
 
 	//
 	void moveBackground();
