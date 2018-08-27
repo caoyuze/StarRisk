@@ -30,10 +30,15 @@ private:
 
     Vector<Enemy*> h_enemies; 
 	vector<Enemy*> removableEnemies;
-    void createSmallEnemy(float);
+    void createSmallEnemy1(float);
+	void createSmallEnemy2(float);
+	void createSmallEnemy2Group(float);
     void createMiddleEnemy(float);
     void createBigEnemy(float);
-    void createEnemy(EnemyType);
+
+    void createEnemy(EnemyType);	
+	//create enemy with Position (x,y)
+	void createEnemy(EnemyType, Point);	
 
 	void menuCloseCallback(Ref* pSender);
 	void PauseAndResume(Ref* ref);

@@ -157,19 +157,65 @@ void GameScene::createMultiBullet()
 //Enemy
 void GameScene::createEnemy(EnemyType type)
 {
-    auto enemy = Enemy::create(type);
-    float leftMinX = enemy->getContentSize().width / 2;
-    float rightMaxX = VisSize.width - leftMinX;
-    float x = rand() % (int)(rightMaxX - leftMinX + 1) + leftMinX; 
-    float y = VisSize.height + enemy->getContentSize().height/2;
-    enemy->setPosition(x, y);
-    h_enemies.pushBack(enemy);
-    this->addChild(enemy, ENEMY_LAYER);
+	float x, y;
+	float leftMinX, rightMaxX;
+	auto enemy = Enemy::create(type);
+	auto size = enemy->getContentSize();
+	switch (type)
+	{
+	case SmallEnemy2:
+		//enemy->~Enemy();
+		//return size;
+		break;
+	case SmallEnemy1:
+	case MiddleEnemy:
+	case BigEnemy:
+		leftMinX = size.width / 2;
+		rightMaxX = VisSize.width - leftMinX;
+		x = rand() % (int)(rightMaxX - leftMinX + 1) + leftMinX;
+		y = VisSize.height + size.height/2;
+		enemy->setPosition(x, y);
+		h_enemies.pushBack(enemy);
+		this->addChild(enemy, ENEMY_LAYER);
+		enemy->move(0, 0);  //小敌机2产生曲线动画，大敌机不移动
+		break;
+	default:
+		break;
+	}
 }
 
-void GameScene::createSmallEnemy(float) 
+void GameScene::createEnemy(EnemyType type, Point position)
 {
-    this->createEnemy(SmallEnemy);
+	auto enemy = Enemy::create(type);
+	enemy->setPosition(position);
+	h_enemies.pushBack(enemy);
+	this->addChild(enemy, ENEMY_LAYER);
+	enemy->move(0, 0);
+}
+
+void GameScene::createSmallEnemy1(float) 
+{
+	this->createEnemy(SmallEnemy1);  //直线小飞机
+}
+
+void GameScene::createSmallEnemy2Group(float)
+{
+	//一组初始坐标相同，方向相同
+	int LeftOrRight = rand() % 2;
+	auto enemy = Enemy::create(SmallEnemy2);
+	auto size = enemy->getContentSize();
+	Enemy::e_curveDirection = ((LeftOrRight == 0) ? Left : Right);
+
+	float x = -size.width / 2 + VisSize.width * (LeftOrRight == 0 ? 0 : 1);
+	float y = rand() % (int)(VisSize.height / 4) + VisSize.height * 3/4 
+		+ size.height / 2;
+	Enemy::e_smallGroupCreatePosition = Point(x, y);
+	schedule(schedule_selector(GameScene::createSmallEnemy2), SMALLENEMY2_INTERVAL, GROUP_SMALL_NUMBER, SMALLENEMY2_DELAY);
+}
+
+void GameScene::createSmallEnemy2(float)
+{
+	this->createEnemy(SmallEnemy2, Enemy::e_smallGroupCreatePosition);
 }
 
 void GameScene::createMiddleEnemy(float) 
@@ -283,6 +329,8 @@ void GameScene::bomb(Ref* ref)
 	{
 		h_enemies.eraseObject(enemy);
 	}
+	removableEnemies.clear();
+	removableEnemies.shrink_to_fit();
 	
 	lblScore->setString(StringUtils::format("%d", m_score));
 }
@@ -442,13 +490,13 @@ void GameScene::createSprites()
 	schedule(schedule_selector(GameScene::createBullet),HERO_BULLET_INTERVAL);
 
 	//create enemies
-    schedule(schedule_selector(GameScene::createSmallEnemy), SMALLENEMY_INTERVAL, REPEAT_FOREVER, SMALLENEMY_DELAY);
+    schedule(schedule_selector(GameScene::createSmallEnemy1), SMALLENEMY1_INTERVAL, REPEAT_FOREVER, SMALLENEMY1_DELAY);  //直线小敌机
+	schedule(schedule_selector(GameScene::createSmallEnemy2Group), SMALLENEMY2GROUP_INTERVAL, REPEAT_FOREVER, SMALLENEMY2GROUP_DELAY);  //曲线小敌机
 	schedule(schedule_selector(GameScene::createMiddleEnemy), MIDDLEENEMY_INTERVAL, REPEAT_FOREVER, MIDDLEENEMY_DELAY);
 	schedule(schedule_selector(GameScene::createBigEnemy), BIGENEMY_INTERVAL, REPEAT_FOREVER, BIGENEMY_DELAY);
 
 	//create prop
 	schedule(schedule_selector(GameScene::createProp), PROP_INTERVAL, REPEAT_FOREVER, PROP_DELAY); 
-
 }
 
 void GameScene::moveBackground()
@@ -490,7 +538,8 @@ void GameScene::flyEnemys()
 	//fly the enemies
 	for(auto enemy:h_enemies)
 	{
-        enemy->setPositionY(enemy->getPositionY() - enemy->getSpeed());
+		//=========================
+        enemy->move(0, -enemy->getSpeed());
         //clean
         if(enemy->getPositionY() + enemy->getContentSize().height/2 <= 0) 
 		{ 
@@ -532,8 +581,9 @@ void GameScene::crashEnemyAndHeroAndBullet()
 				Audio->playEffect("game_over.mp3");
 				auto animation = MyAnimationCache->getAnimation("hero_destroy");
 				auto animate = Animate::create(animation);
-				auto jumptoOver = CallFunc::create([=](){
-					auto scene = OverScene::createWithScore(this->m_score);
+				auto jumptoOver = CallFunc::create([=]()
+				{
+					auto scene = OverScene::createWithScore(m_score);
 					Director::getInstance()->replaceScene(scene);
 				});
 				hero->runAction(Sequence::create(animate, jumptoOver, nullptr));
@@ -632,5 +682,5 @@ void GameScene::crashPropAndHero()
 		this->h_props.eraseObject(prop);
 	}
 	removableProps.clear();
-
+	removableProps.shrink_to_fit();
 }

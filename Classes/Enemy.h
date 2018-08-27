@@ -3,12 +3,20 @@
 #include "CommonData.h"
 #include "Prop.h"
 
-//敌机类型
+//enemy type
 enum EnemyType
 {
-    SmallEnemy,
+    SmallEnemy1,  //直线
+	SmallEnemy2,  //曲线
     MiddleEnemy,
     BigEnemy
+};
+
+enum CurveDirection
+{
+	Left,
+	Right,
+	None
 };
 
 class Enemy : public Sprite 
@@ -38,11 +46,19 @@ public:
 	int getScore() { return e_score; };
 	void setScore(int score) { e_score = score; };
 
-	//
 	bool isDestroyed() { return e_hp <= 0; };
+
+	void move(float x, float y);
+
+	//curveDirection visitor
+	//CurveDirection getCurveDirection() { return e_curveDirection; };
+	//void setCurveDirection(CurveDirection curveDirection) { e_curveDirection = curveDirection; };
 
 	static void updateLevelSpeed(int);
 	static void clearLevelSpeed();
+
+	static Point e_smallGroupCreatePosition;
+	static CurveDirection e_curveDirection;
 
 private:
     EnemyType e_type;
@@ -51,10 +67,13 @@ private:
 
     float e_speed;
 
-    int e_hp;   
+    int e_hp; 
 	//score
 	int e_score;
 	//the prop that enemy catch
 	PropType e_prop;
+
 	static float e_LevelSpeed;
+
+	bool e_canMove;
 };
