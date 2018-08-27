@@ -598,7 +598,7 @@ void GameScene::crashPropAndHero()
 			{
 			case Enhance_Bullet:
 				Audio->playEffect("get_double_laser.mp3");
-				(m_doubleBulletCount > 0)?(m_multiBulletCount = MULTIBULLET_NUMBER)
+				(m_multiBulletCount > 0)?(m_multiBulletCount = MULTIBULLET_NUMBER)
 					:(m_doubleBulletCount = DOUBLEBULLET_NUMBER);
 				break;
 			case Bomb:
