@@ -1,2 +1,2 @@
-# StarRisk
-the expansion of Airplane game
+# the expansion of Airplane game
+
