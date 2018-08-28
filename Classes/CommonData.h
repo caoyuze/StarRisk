@@ -43,10 +43,10 @@ using namespace CocosDenshion;
 #define HP_SMALL					1
 #define HP_MIDDLE					10
 #define HP_BIG						30
-#define HP_HERO						5
+#define HP_HERO						100	//default 3
 
 //hero
-#define HERO_ONE_HP					5
+#define HERO_ONE_HP					100	//default 3
 
 //speed (px)
 #define SP_BG						2
@@ -77,12 +77,12 @@ using namespace CocosDenshion;
 //create interval (s)
 #define HERO_BULLET_INTERVAL		0.2f
 #define ENEMY_BULLET_INTERVAL		1
-#define SMALLENEMY1_INTERVAL		0.8f
+#define SMALLENEMY1_INTERVAL		1.0f
 #define SMALLENEMY2_INTERVAL		0.3f
-#define SMALLENEMY2GROUP_INTERVAL	10
+#define SMALLENEMY2GROUP_INTERVAL	5	//default 10
 #define MIDDLEENEMY_INTERVAL		10
 #define BIGENEMY_INTERVAL			20
-#define PROP_INTERVAL				15
+#define PROP_INTERVAL				15  //default 15
 
 //repeate
 #define REPEAT_FOREVER				-1
@@ -101,6 +101,7 @@ using namespace CocosDenshion;
 #define MAX_RANK_NUMBER				8
 #define PROPTYPE_NUMBER				3
 #define MAX_BOMB_NUMBER				10
+#define OFFSET_NUMBER				100
 
 //the repetitions of scedule(), that means the number of small enemy is 4
 #define GROUP_SMALL_NUMBER			3   
@@ -109,4 +110,7 @@ using namespace CocosDenshion;
 #define	BULLET1_ATTACK				1
 #define BULLET2_ATTACK				2
 #define BOMB_ATTACK					100
-#define HERO_HIT_ATTACK				50
+#define HERO_HIT_ATTACK				0	//default 50
+
+//offset
+#define X_OFFSET					2

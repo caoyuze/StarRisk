@@ -4,7 +4,7 @@ float Enemy::e_LevelSpeed = 0;
 
 Point Enemy::e_smallGroupCreatePosition = Point::ZERO;
 
-CurveDirection Enemy::e_curveDirection = None;
+CurveDirection Enemy::e_curveDirection = cNone;
 
 Enemy::Enemy()
 {
@@ -14,6 +14,8 @@ Enemy::Enemy()
 	e_score = 0;
 	e_bigFlySoundId = 0;
 	e_canMove = true;
+	e_lineDirection = lStraight;
+	cnt = 0;
 }
 
 Enemy::~Enemy()
@@ -49,18 +51,21 @@ bool Enemy::init(EnemyType type)
         e_hp = HP_SMALL;
 		e_speed = SP_SMALL;      
 		e_score = SCORE_SMALL;
+		//e_lineDirection = lLeft;
         Sprite::initWithSpriteFrameName("enemy1.png");
         break;
     case MiddleEnemy:
         e_hp = HP_MIDDLE;
 		e_speed = SP_MIDDLE;
 		e_score = SCORE_MIDDLE;
+		e_lineDirection = (rand() % 2 == 0 ? lLeft : lRight);
         Sprite::initWithSpriteFrameName("enemy2.png");
         break;
     case BigEnemy:
         e_hp = HP_BIG;
 		e_speed = SP_BIG;
 		e_score = SCORE_BIG;
+		e_lineDirection = (rand() % 2 == 0 ? lLeft : lRight);
 		Sprite::initWithSpriteFrameName("enemy3_n1.png");
 		{
 			//·ÉÐÐ¶¯»­
@@ -164,12 +169,11 @@ void Enemy::move(float x, float y)
 					p5 = Point(w, h),
 					p6 = Point(w*7/8, h*2/3),
 					p7 = Point(w/4, h/5),
-					p8 = Point(-this->getContentSize().height, h/5),
+					p8 = Point(-this->getContentSize().width-10, h/5),
 					p9 = Point(w*3/4, h/5),
-					p10 = Point(w+this->getContentSize().height, h/5);
-				if (e_curveDirection == Right)
+					p10 = Point(w+this->getContentSize().width+10, h/5);
+				if (e_curveDirection == cRight)
 				{
-					
 					bezier.controlPoint_1 = p1;
 					bezier.controlPoint_2 = p2;
 					bezier.endPosition = p3;
@@ -183,21 +187,8 @@ void Enemy::move(float x, float y)
 					bezier.endPosition = p8;
 					auto move3 = BezierTo::create(2.0f, bezier);
 					this->runAction(Sequence::create(move1, move2, move3, NULL));
-					/*
-					auto array = CCPointArray::create(20);
-					array->addControlPoint(Point(424, 500));
-					array->addControlPoint(Point(345, 410));
-					array->addControlPoint(Point(161, 425));
-					array->addControlPoint(Point(163, 500));
-					array->addControlPoint(Point(255, 575));
-					array->addControlPoint(Point(344, 500));
-					array->addControlPoint(Point(260, 358));
-					array->addControlPoint(Point(0, 250));
-					auto move = CCCardinalSplineTo::create(10, array, 10);;
-					this->runAction(move);
-					*/
 				}
-				else if (e_curveDirection == Left )
+				else if (e_curveDirection == cLeft)
 				{
 					bezier.controlPoint_1 = p2;
 					bezier.controlPoint_2 = p1;
@@ -220,7 +211,35 @@ void Enemy::move(float x, float y)
 		case MiddleEnemy:
 		case BigEnemy:
 			{
- 				this->setPosition(this->getPosition() + Point(x, y));
+				float dx, dy;
+				if (this->e_lineDirection != lStraight)
+				{
+					cnt++;
+				}
+				if (canChangeLineDirection() || beyondLimitX())
+				{
+					changeLineDirection();
+				}
+				switch (e_lineDirection)
+				{
+				case lLeft:
+					dx = -x; 
+					dy = -y;
+					break;
+				case lRight:
+					dx = x;
+					dy = -y;
+					break;
+				case lStraight:
+					dx = 0;
+					dy = -y;
+					break;
+				default:
+					dx = 0;
+					dy = 0;
+					break;
+				}
+				this->setPosition(this->getPosition() + Point(dx, dy));
 			}
 			break;
 		default:
@@ -231,4 +250,33 @@ void Enemy::move(float x, float y)
 	{
 		return;
 	}
+}
+
+void Enemy::changeLineDirection()
+{
+	switch (e_lineDirection)
+	{
+	case lLeft:
+		e_lineDirection = lRight;
+		break;
+	case lRight:
+		e_lineDirection = lLeft;
+		break;
+	case lStraight:
+		break;
+	default:
+		break;
+	}
+	cnt = 0;
+}
+
+bool Enemy::beyondLimitX()
+{
+	return this->getPositionX() + this->getContentSize().width/2 < 0 ||
+		this->getPositionX() - this->getContentSize().width/2 > VisSize.width;
+}
+
+bool Enemy::beyondLimitY()
+{
+	return this->getPositionY() + this->getContentSize().height/2 < 0;
 }

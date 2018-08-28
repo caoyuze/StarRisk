@@ -110,15 +110,15 @@ void GameScene::updateSpeed()
 void GameScene::createBullet(float) 
 {
 	Audio->playEffect("bullet.mp3");
-	(m_multiBulletCount > 0)?createMultiBullet():
-		((m_doubleBulletCount>0)?createDoubleBullet():createSingleBullet());
+	//(m_multiBulletCount > 0)?createMultiBullet():
+		//((m_doubleBulletCount>0)?createDoubleBullet():createSingleBullet());
 }
 
 void GameScene::createSingleBullet()
 {
 	auto hero = this->getChildByTag(HERO_TAG);
 	auto bullet = Bullet::create(SingleBullet);
-	bullet->setPosition(hero->getPosition() + Point(0,hero->getContentSize().height / 2));
+	bullet->setPosition(hero->getPosition() + Point(1, hero->getContentSize().height/2+5));
 	this->addChild(bullet, BULLET_LAYER);
 	//push this bullet into vector
 	h_bullets.pushBack(bullet);
@@ -204,11 +204,11 @@ void GameScene::createSmallEnemy2Group(float)
 	int LeftOrRight = rand() % 2;
 	auto enemy = Enemy::create(SmallEnemy2);
 	auto size = enemy->getContentSize();
-	Enemy::e_curveDirection = ((LeftOrRight == 0) ? Left : Right);
+	Enemy::e_curveDirection = ((LeftOrRight == 0) ? cLeft : cRight);
 
-	float x = -size.width / 2 + VisSize.width * (LeftOrRight == 0 ? 0 : 1);
-	float y = rand() % (int)(VisSize.height / 4) + VisSize.height * 3/4 
-		+ size.height / 2;
+	float x = -size.width/2 + (VisSize.width + size.width/2) * (LeftOrRight == 0 ? 0 : 1);
+	float y = rand() % (int)(VisSize.height/4) + VisSize.height * 3/4 + size.height/2;
+
 	Enemy::e_smallGroupCreatePosition = Point(x, y);
 	schedule(schedule_selector(GameScene::createSmallEnemy2), SMALLENEMY2_INTERVAL, GROUP_SMALL_NUMBER, SMALLENEMY2_DELAY);
 }
@@ -519,7 +519,7 @@ void GameScene::flyBullets()
 	for(auto bullet: h_bullets) 
 	{		
 		bullet->setPositionY(bullet->getPositionY() + SP_HERO_BULLET);
-		if(bullet->getPositionY() >= VisSize.height)
+		if(bullet->getPositionY() - bullet->getContentSize().height/2 >= VisSize.height)
 		{
 			removableBullets.push_back(bullet);
 			this->removeChild(bullet);
@@ -539,9 +539,9 @@ void GameScene::flyEnemys()
 	for(auto enemy:h_enemies)
 	{
 		//=========================
-        enemy->move(0, -enemy->getSpeed());
+        enemy->move(X_OFFSET, enemy->getSpeed());
         //clean
-        if(enemy->getPositionY() + enemy->getContentSize().height/2 <= 0) 
+        if(enemy->beyondLimitY() || enemy->beyondLimitX()) 
 		{ 
 			removableEnemies.push_back(enemy);
             this->removeChild(enemy);
