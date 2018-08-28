@@ -9,24 +9,36 @@ enum EnemyType
     SmallEnemy1,  //Ö±Ïß
 	SmallEnemy2,  //ÇúÏß
     MiddleEnemy,
-    BigEnemy
+    BigEnemy,
+	Boss
 };
 
 enum CurveDirection
 {
-	cLeft,
-	cRight,
-	cNone
+	CLeft,
+	CRight,
+	CNone
 };
 
 enum LineDirection
 {
-	lLeft,
-	lRight,
-	lStraight
+	LLeft,
+	LRight,
+	LStraight
 };
 
-class Enemy : public Sprite 
+enum BossDirection
+{
+	LeftUp,
+	LeftDown,
+	RightUp,
+	RightDown,
+	Up,
+	Down,
+	None
+};
+
+class Enemy : public Sprite
 {
 public:
 	Enemy();
@@ -55,12 +67,17 @@ public:
 
 	bool isDestroyed() { return e_hp <= 0; };
 
+	//small enemy 2
+	void move2();
+	//others
 	void move(float x, float y);
 
-	bool canChangeLineDirection() { return cnt == OFFSET_NUMBER; };
+	bool canChangeLineDirection();
 	//line direction visitor
 	LineDirection getLineDirection() { return e_lineDirection; };
 	void changeLineDirection();
+
+	void updateBossDirection();
 
 	static void updateLevelSpeed(int);
 	static void clearLevelSpeed();
@@ -68,6 +85,11 @@ public:
 	//judge whether the enemy is out of screen
 	bool beyondLimitX();
 	bool beyondLimitY();
+
+	bool bossBeyondLimitMinX();
+	bool bossBeyondLimitMinY();
+	bool bossBeyondLimitMaxX();
+	bool bossBeyondLimitMaxY();
 
 	static Point e_smallGroupCreatePosition;
 	static CurveDirection e_curveDirection;
@@ -92,4 +114,6 @@ private:
 	LineDirection e_lineDirection;
 
 	int cnt;
+
+	BossDirection e_bossDirection;
 };

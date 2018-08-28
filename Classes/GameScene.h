@@ -66,10 +66,14 @@ private:
 	void updateBomb();
 	void updateSpeed();
 
-	//
+	//action
 	void moveBackground();
 	void flyBullets();
 	void flyEnemys();
 	void crashEnemyAndHeroAndBullet();
 	void crashPropAndHero();
+
+	//boss
+	bool canCreateBoss();
+	void createBoss();
 };

@@ -109,6 +109,6 @@ void Hero::rebirthHero()
 	{
 		h_canMove = true;
 	});
-	auto blin = Blink::create(2, 6);
+	auto blin = Blink::create(2, 4);
 	this->runAction(Sequence::create(stopHero, animate, getBack, moveHero, blin, activeHero, nullptr));
 }

@@ -107,7 +107,7 @@ void GameScene::updateSpeed()
 }
 
 //Bullet
-void GameScene::createBullet(float) 
+void GameScene::createBullet(float)
 {
 	Audio->playEffect("bullet.mp3");
 	//(m_multiBulletCount > 0)?createMultiBullet():
@@ -130,15 +130,15 @@ void GameScene::createDoubleBullet()
 
 	//left bullet
 	auto leftBullet = Bullet::create(DoubleBullet);
-	leftBullet->setPosition(hero->getPositionX()-hero->getContentSize().width/3,
-		hero->getPositionY() + hero->getContentSize().height/3);
+	leftBullet->setPosition(hero->getPosition() + Point(-hero->getContentSize().width/3+2, 
+		hero->getContentSize().height/5+5));
 	this->addChild(leftBullet, BULLET_LAYER);
 	this->h_bullets.pushBack(leftBullet);
 
 	//right bullet
 	auto rightBullet = Bullet::create(DoubleBullet);
-	rightBullet->setPosition(hero->getPositionX()+hero->getContentSize().width/3,
-		hero->getPositionY() + hero->getContentSize().height/3);
+	rightBullet->setPosition(hero->getPosition() + Point(hero->getContentSize().width/3-2, 
+		hero->getContentSize().height/5+5));
 	this->addChild(rightBullet, BULLET_LAYER);
 	this->h_bullets.pushBack(rightBullet);
 	m_doubleBulletCount--;
@@ -147,9 +147,9 @@ void GameScene::createDoubleBullet()
 void GameScene::createMultiBullet()
 {
 	auto hero = this->getChildByTag(HERO_TAG);
-	//createSingleBullet();
-	//createDoubleBullet();
 	//=========================
+	createSingleBullet();
+	createDoubleBullet();
 	m_multiBulletCount--;
 }
 
@@ -177,7 +177,12 @@ void GameScene::createEnemy(EnemyType type)
 		enemy->setPosition(x, y);
 		h_enemies.pushBack(enemy);
 		this->addChild(enemy, ENEMY_LAYER);
-		enemy->move(0, 0);  //小敌机2产生曲线动画，大敌机不移动
+		//enemy->move(0, 0);
+		break;
+	case Boss:
+		enemy->setPosition(VisSize.width/2, VisSize.height + size.height/2);
+		h_enemies.pushBack(enemy);
+		this->addChild(enemy, ENEMY_LAYER);
 		break;
 	default:
 		break;
@@ -190,7 +195,7 @@ void GameScene::createEnemy(EnemyType type, Point position)
 	enemy->setPosition(position);
 	h_enemies.pushBack(enemy);
 	this->addChild(enemy, ENEMY_LAYER);
-	enemy->move(0, 0);
+	//enemy->move(0, 0);
 }
 
 void GameScene::createSmallEnemy1(float) 
@@ -204,7 +209,7 @@ void GameScene::createSmallEnemy2Group(float)
 	int LeftOrRight = rand() % 2;
 	auto enemy = Enemy::create(SmallEnemy2);
 	auto size = enemy->getContentSize();
-	Enemy::e_curveDirection = ((LeftOrRight == 0) ? cLeft : cRight);
+	Enemy::e_curveDirection = ((LeftOrRight == 0) ? CLeft : CRight);
 
 	float x = -size.width/2 + (VisSize.width + size.width/2) * (LeftOrRight == 0 ? 0 : 1);
 	float y = rand() % (int)(VisSize.height/4) + VisSize.height * 3/4 + size.height/2;
@@ -497,6 +502,8 @@ void GameScene::createSprites()
 
 	//create prop
 	schedule(schedule_selector(GameScene::createProp), PROP_INTERVAL, REPEAT_FOREVER, PROP_DELAY); 
+
+	createBoss();
 }
 
 void GameScene::moveBackground()
@@ -538,7 +545,6 @@ void GameScene::flyEnemys()
 	//fly the enemies
 	for(auto enemy:h_enemies)
 	{
-		//=========================
         enemy->move(X_OFFSET, enemy->getSpeed());
         //clean
         if(enemy->beyondLimitY() || enemy->beyondLimitX()) 
@@ -671,7 +677,7 @@ void GameScene::crashPropAndHero()
 			removableProps.push_back(prop);
 		}
 
-		if(prop->getPositionY() ==  -prop->getContentSize().height/2)
+		if(prop->getPositionY() == -prop->getContentSize().height/2)
 		{
 			removableProps.push_back(prop);
 		}
@@ -683,4 +689,14 @@ void GameScene::crashPropAndHero()
 	}
 	removableProps.clear();
 	removableProps.shrink_to_fit();
+}
+
+bool GameScene::canCreateBoss()
+{
+	return (m_score >= SCORE_CREATEBOSS) && (m_score % SCORE_CREATEBOSS == 0);
+}
+
+void GameScene::createBoss()
+{
+	this->createEnemy(Boss);
 }

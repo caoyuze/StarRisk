@@ -44,6 +44,7 @@ using namespace CocosDenshion;
 #define HP_MIDDLE					10
 #define HP_BIG						30
 #define HP_HERO						100	//default 3
+#define HP_BOSS						1000
 
 //hero
 #define HERO_ONE_HP					100	//default 3
@@ -56,6 +57,7 @@ using namespace CocosDenshion;
 #define SP_HERO_BULLET				5
 #define SP_ENEMY_BULLET				1
 #define SP_ENEMY_INCREMENT			0.1f
+#define SP_BOSS						1.0f
 
 //delay (s)
 #define HIT_DELAY					0.2f
@@ -72,7 +74,9 @@ using namespace CocosDenshion;
 #define SCORE_SMALL					10
 #define SCORE_MIDDLE				50
 #define SCORE_BIG					100
+#define SCORE_BOSS					5000
 #define SPEED_LEVELUP_SCORE			500
+#define SCORE_CREATEBOSS			100  //default 2000
 
 //create interval (s)
 #define HERO_BULLET_INTERVAL		0.2f
@@ -114,3 +118,4 @@ using namespace CocosDenshion;
 
 //offset
 #define X_OFFSET					2
+#define Y_OFFSET					1
